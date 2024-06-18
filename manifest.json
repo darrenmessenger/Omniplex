@@ -11,7 +11,7 @@
     "48": "images/icons/icon_content_48.png",
     "128": "images/icons/icon_content_128.png"
   },
-  "permissions": [],
+  "permissions": ["activeTab", "storage", "scripting"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
