@@ -1,24 +1,29 @@
 import { Message } from "./messaging";
 
-chrome.runtime.onMessage.addListener(
-  (request: { message: Message; payload: any }, sender, sendResponse) => {
-    console.log("Received message:", request);
-    switch (request.message) {
-      case Message.LOADED:
-        console.log("Content script loaded", request.payload);
-        // Store data in chrome storage
-        chrome.storage.local.set({ [request.payload.url]: request.payload.elements }, () => {
-          console.log("Data stored in Chrome storage.");
-          chrome.storage.local.get(null, (items) => {
-            console.log("Stored items:", items);
-          });
-        });
-        break;
-      default:
-        console.error("Unknown message", request.message);
-    }
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("Received message:", request);
+  if (request.message === Message.LOADED) {
+    console.log("Content script loaded", request.payload);
+    const { url, elements } = request.payload;
+    console.log(`Storing data for URL: ${url}`);
+    
+    // Store the data
+    chrome.storage.local.set({ [url]: elements }, () => {
+      console.log("Data stored in chrome.storage.local.");
+      
+      // Retrieve and log stored data for verification
+      chrome.storage.local.get(url, (result) => {
+        if (result[url]) {
+          console.log("Stored items for URL:", result[url]);
+        } else {
+          console.error(`No data found for URL: ${url}`);
+        }
+      });
+    });
+  } else {
+    console.error("Unknown message", request.message);
   }
-);
+});
 
 // Monitor tab updates
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {

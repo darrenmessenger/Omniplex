@@ -2,11 +2,17 @@ import { Message } from "./messaging";
 
 console.log("Content script loaded");
 
-function getAllLinksAndButtons() {
+type ElementData = {
+  tagName: string;
+  href: string | null;
+  type: string;
+};
+
+function getAllLinksAndButtons(): ElementData[] {
   const links = document.querySelectorAll("a");
   const buttons = document.querySelectorAll("button");
 
-  let elementsData: { tagName: string; href: string | null; type: string }[] = [];
+  let elementsData: ElementData[] = [];
 
   links.forEach(link => {
     elementsData.push({
